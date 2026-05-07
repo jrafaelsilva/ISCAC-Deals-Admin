@@ -1,0 +1,131 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto p-10">
+    
+    <!-- Cabeçalho com botão de Voltar -->
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <p class="text-gray-500 text-sm">Ticket de Suporte #{{ ticket.id }}</p>
+            <h1 class="text-3xl font-bold text-gray-900 mt-1">Detalhes do Pedido</h1>
+        </div>
+        
+        <a href="{% url 'suporte' %}" class="bg-white text-slate-500 px-5 py-2.5 rounded-xl font-bold text-sm border border-gray-200 hover:bg-gray-50 transition-all flex items-center gap-2">
+            &larr; Voltar
+        </a>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- COLUNA DA ESQUERDA: O CHAT -->
+        <div class="md:col-span-2 flex flex-col h-[700px] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            
+            <!-- Cabeçalho do Chat -->
+            <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                <h2 class="text-lg font-bold text-slate-800">{{ ticket.assunto }}</h2>
+                <p class="text-xs text-gray-500 mt-1">Aberto a {{ ticket.data_envio|date:"d M Y" }} às {{ ticket.data_envio|time:"H:i" }}</p>
+            </div>
+            
+            <!-- Área das Mensagens (Scrollable) -->
+            <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-gray-50/30">
+
+<!-- Guardar o dia de hoje numa variável chamada 'hoje' -->
+                {% now "Y-m-d" as hoje %}
+
+                <!-- Histórico de Mensagens da Tabela core_suporte_mensagens -->
+                {% for msg in mensagens %}
+                    {% if msg.remetente == 'admin' %}
+                        <!-- Balão do Admin (Direita, Azul) -->
+                        <div class="flex flex-col gap-1 items-end">
+                            <span class="text-[10px] font-bold text-blue-400 uppercase mr-1">
+                                Admin (Tu) - 
+                                {% if msg.data_envio|date:"Y-m-d" == hoje %}
+                                    {{ msg.data_envio|time:"H:i" }}
+                                {% else %}
+                                    {{ msg.data_envio|date:"d M" }}
+                                {% endif %}
+                            </span>
+                            <div class="bg-blue-600 text-white px-5 py-3 rounded-2xl rounded-tr-sm max-w-[80%] text-sm font-medium whitespace-pre-wrap shadow-md shadow-blue-200">
+{{ msg.mensagem }}
+                            </div>
+                        </div>
+                    {% else %}
+                        <!-- Balão do Aluno (Esquerda, Cinza) -->
+                        <div class="flex flex-col gap-1 items-start">
+                            <span class="text-[10px] font-bold text-gray-400 uppercase ml-1">
+                                Aluno - 
+                                {% if msg.data_envio|date:"Y-m-d" == hoje %}
+                                    {{ msg.data_envio|time:"H:i" }}
+                                {% else %}
+                                    {{ msg.data_envio|date:"d M" }}
+                                {% endif %}
+                            </span>
+                            <div class="bg-gray-100 text-slate-700 px-5 py-3 rounded-2xl rounded-tl-sm max-w-[80%] text-sm font-medium whitespace-pre-wrap shadow-sm">
+{{ msg.mensagem }}
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+
+            <!-- Caixa para Escrever Nova Mensagem -->
+            <div class="p-4 bg-white border-t border-gray-100">
+                <form method="POST" action="{% url 'detalhe_suporte' ticket.id %}" class="flex gap-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="enviar_mensagem" value="1">
+                    <input type="text" name="nova_mensagem" placeholder="Escreve a tua resposta para o aluno..." required class="flex-1 bg-gray-50 border border-gray-200 text-slate-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block px-4 py-3 outline-none transition-all">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-md shadow-blue-200 transition-all">
+                        Enviar
+                    </button>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- COLUNA DA DIREITA: Ações e Info do Cliente -->
+        <div class="space-y-6">
+            
+            <!-- Cartão do Cliente -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Informação do Cliente</h3>
+                <div class="flex flex-col gap-1">
+                    <span class="text-sm font-bold text-slate-800 break-all">{{ ticket.email }}</span>
+                </div>
+            </div>
+
+            <!-- Cartão de Ações (Resolver) -->
+            <div class="bg-white rounded-2xl shadow-sm border {% if ticket.resolvido %}border-green-200 bg-green-50{% else %}border-orange-200 bg-orange-50{% endif %} p-6">
+                <h3 class="text-xs font-bold {% if ticket.resolvido %}text-green-600{% else %}text-orange-600{% endif %} uppercase tracking-wider mb-4">Estado do Ticket</h3>
+                
+                <form method="POST" action="{% url 'detalhe_suporte' ticket.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="resolver_ticket" value="1"> <!-- Identificador deste form -->
+                    
+                    <label class="flex items-center gap-3 cursor-pointer group mb-6">
+                        <div class="relative flex items-center">
+                            <input type="checkbox" name="resolvido" class="peer sr-only" {% if ticket.resolvido %}checked{% endif %}>
+                            <div class="w-11 h-6 bg-gray-300 rounded-full peer peer-checked:bg-green-500 transition-colors"></div>
+                            <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5 shadow-sm"></div>
+                        </div>
+                        <span class="text-sm font-bold text-slate-700">Marcar como Resolvido</span>
+                    </label>
+
+                    <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-all">
+                        💾 Guardar Estado
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Script rápido para o chat abrir sempre no final das mensagens -->
+<script>
+    const chatContainer = document.querySelector('.overflow-y-auto');
+    if (chatContainer) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+</script>
+{% endblock %}

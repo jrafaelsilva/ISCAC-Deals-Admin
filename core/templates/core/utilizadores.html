@@ -1,0 +1,126 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-10">
+    
+    <header class="flex justify-between items-center mb-8">
+        <div>
+            <p class="text-gray-500 text-sm">Painel de Gestão</p>
+            <h1 class="text-3xl font-bold text-gray-900 mt-1">Alunos</h1>
+            <p class="text-gray-400 text-sm">Gerir os utilizadores inscritos na plataforma</p>
+        </div>
+        
+<a href="{% url 'adicionar_aluno' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center gap-2 inline-flex w-fit">
+            <span>+</span> Adicionar Aluno
+        </a>
+    </header>
+<div class="grid grid-cols-1 md:grid-cols-4 mb-8 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Total de Utilizadores</p>
+            <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ total_utilizadores }}</h3>
+        </div>
+    </div>
+    <div class="flex items-center gap-3 mb-8 p-4 rounded-2xl w-fit">
+        <div class="flex gap-2">
+            <button class="filter-estado-btn bg-blue-600 text-white px-3 py-1.5 rounded-full font-bold text-sm shadow-sm transition-all" data-estado="todos">Todos</button>
+            <button class="filter-estado-btn bg-white text-slate-500 px-3 py-1.5 rounded-full font-bold text-sm border border-gray-200 transition-all" data-estado="1">Ativos</button>
+            <button class="filter-estado-btn bg-white text-slate-500 px-3 py-1.5 rounded-full font-bold text-sm border border-gray-200  transition-all" data-estado="0">Inativos</button>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 border-b border-gray-100">
+                <tr class=" text-xs font-bold text-slate-500 uppercase">
+                    <th class="p-5">Aluno</th>
+                    <th class="p-5">Contacto</th>
+                    <th class="p-5">Curso & Ano</th>
+                    <th class="p-5">Estado</th>
+                    <th class="p-5 text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                
+                {% for aluno in utilizadores %}
+                <tr class="hover:bg-gray-50 transition linha-aluno" data-ativo="{{ aluno.ativo }}">
+                    <td class="p-5">
+                        <div class="flex items-center gap-3">
+                            
+                            {% if aluno.foto_url %}
+                                <img src="{{ aluno.foto_url }}" alt="{{ aluno.nome }}" style="width: 40px; height: 40px; min-width: 40px; object-fit: cover;" class="rounded-full border border-gray-200 shrink-0">
+                            {% else %}
+                                <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 font-bold text-sm shrink-0">
+                                    {{ aluno.nome|first|upper }}
+                                </div>
+                            {% endif %}
+                            
+                            <div>
+                                <p class="font-bold text-gray-800">{{ aluno.nome }}</p>
+                                <p class="text-xs text-gray-400">Desde {{ aluno.data_registo|date:"d M Y" }}</p>
+                            </div>
+                        </div>
+                    </td>
+                    
+                    <td class="p-5 text-sm text-gray-600">
+                        {{ aluno.email }}
+                    </td>
+
+                    <td class="p-5 text-sm text-gray-600">
+                        {{ aluno.nome_curso }} <span class="text-gray-400 text-xs">({{ aluno.ano }}º Ano)</span>
+                    </td>
+                    
+                    <td class="p-5">
+                        {% if aluno.ativo == 1 %}
+                            <span class="bg-green-100 text-green-700 text-xs font-bold px-3 py-1 rounded-full">Ativo</span>
+                        {% else %}
+                            <span class="bg-red-100 text-red-700 text-xs font-bold px-3 py-1 rounded-full">Inativo</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="p-5 text-right">
+                        <a href="/editar_aluno/{{ aluno.id }}/" class="bg-gray-50 hover:bg-blue-50 text-gray-500 hover:text-blue-600 border border-gray-200 hover:border-blue-200 px-3 py-1 rounded-full text-xs font-bold transition-all inline-block shadow-sm">
+                            Editar
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="p-10 text-center text-gray-400 italic">Nenhum aluno registado ainda.</td>
+                </tr>
+                {% endfor %}
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const btnsEstado = document.querySelectorAll('.filter-estado-btn');
+    const linhasAlunos = document.querySelectorAll('.linha-aluno');
+
+    btnsEstado.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // 1. Alterar o visual dos botões
+            btnsEstado.forEach(b => {
+                b.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+                b.classList.add('bg-white', 'text-slate-500', 'border', 'border-gray-200');
+            });
+            this.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+            this.classList.remove('bg-white', 'text-slate-500', 'border', 'border-gray-200');
+
+            // 2. Filtrar as linhas da tabela
+            const estadoSelecionado = this.getAttribute('data-estado');
+            
+            linhasAlunos.forEach(linha => {
+                const estadoDaLinha = linha.getAttribute('data-ativo');
+                
+                if (estadoSelecionado === 'todos' || estadoDaLinha === estadoSelecionado) {
+                    linha.style.display = '';
+                } else {
+                    linha.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

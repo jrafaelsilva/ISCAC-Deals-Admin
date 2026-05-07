@@ -1,0 +1,177 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-10">
+    <header class="mb-10">
+        <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Moderação de Chat</h1>
+        <p class="text-slate-500">Monitorizar as mensagens enviadas na plataforma</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 mb-8 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Total de Mensagens</p>
+            <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ total_mensagens }}</h3>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Mensagens Lidas</p>
+            <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ mensagens_lidas }}</h3>
+        </div>
+
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Mensagens Ocultas (Inativas)</p>
+            <h3 class="text-3xl font-bold text-red-500 mt-2">{{ mensagens_inativas }}</h3>
+        </div>
+    </div>
+
+    <div class="flex flex-col md:flex-row gap-6 mb-8 bg-white p-3 rounded-2xl shadow-sm border border-gray-100">
+        <div class="flex items-center gap-3">
+            <label for="filtro-data" class="text-sm font-bold text-slate-400">Data de Envio:</label>
+            <input type="date" id="filtro-data" class="bg-gray-50 border border-gray-200 text-slate-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block px-4 py-2 outline-none transition-all">
+        </div>
+
+        <div class="flex items-center gap-3">
+            <label for="filtro-remetente" class="text-sm font-bold text-slate-400">Remetente:</label>
+            <input type="text" id="filtro-remetente" placeholder="Procurar por nome..." class="bg-gray-50 border border-gray-200 text-slate-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block px-4 py-2 outline-none transition-all w-64">
+        </div>
+        
+        <div class="flex items-center ml-auto">
+            <button id="btn-limpar" class="text-sm text-blue-600 font-bold hover:text-blue-800 transition-colors">Limpar Filtros</button>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 border-b border-gray-100">
+                <tr class="text-slate-500 text-xs font-bold uppercase tracking-widest">
+                    <th class="p-6">ID Conversa</th>
+                    <th class="p-6">Remetente</th>
+                    <th class="p-6 w-1/3">Mensagem</th>
+                    <th class="p-6 text-center">Lida</th>
+                    <th class="p-6 text-center">Ativo</th>
+                    <th class="p-6">Data de Envio</th>
+                    <th class="p-6 text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50 font-inter">
+                
+                {% for m in mensagens %}
+                <tr class="hover:bg-gray-50 transition-colors group linha-mensagem" 
+                    data-dataenvio="{{ m.data_envio|date:'Y-m-d' }}" 
+                    data-remetente="{{ m.nome_remetente|lower }}">
+                    
+                    <td class="p-6 text-sm font-bold text-blue-600 font-mono" title="{{ m.id_conversa }}">
+                        {{ m.id_conversa|truncatechars:8 }}
+                    </td>
+                    
+                    <td class="p-6">
+                        <span class="text-sm font-semibold text-slate-700">{{ m.nome_remetente }}</span>
+                    </td>
+                    
+                    <td class="p-6 text-sm font-semibold text-slate-700 truncate max-w-xs">
+                        {% if 'IMG::' in m.texto %}
+                            <span class="bg-gray-100 text-gray-500 text-[10px] px-2 py-1 rounded font-bold uppercase flex items-center gap-1 w-fit">
+                                Imagem Anexada
+                            </span>
+                        {% else %}
+                            {{ m.texto|truncatechars:40 }}
+                        {% endif %}
+                    </td>
+                    
+                    <td class="p-6 text-center">
+                        {% if m.lida %}
+                            <span class="bg-green-50 text-green-600 text-[10px] font-black uppercase px-2 py-1 rounded">Sim</span>
+                        {% else %}
+                            <span class="bg-orange-50 text-orange-600 text-[10px] font-black uppercase px-2 py-1 rounded">Não</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="p-6 text-center">
+                        {% if m.ativo == 1 %}
+                            <span class="text-sm font-semibold text-slate-700">Sim</span>
+                        {% else %}
+                            <span class="text-sm font-bold text-red-500">Não</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="p-6 text-sm font-semibold text-slate-700">
+                        {{ m.data_envio|date:"d M Y" }} <span class="text-[10px] text-gray-400 block">{{ m.data_envio|time:"H:i" }}</span>
+                    </td>
+                    
+                    <td class="p-6 text-right">
+                        <div class="flex justify-end gap-3 opacity-40 group-hover:opacity-100 transition-opacity">
+                            <a href="/ocultar_mensagem/{{ m.id }}/" 
+                               title="{% if m.ativo == 1 %}Ocultar Mensagem{% else %}Restaurar Mensagem{% endif %}" 
+                               class="hover:scale-110 transition-transform">
+                                
+                                {% if m.ativo == 1 %}
+                                    🚫
+                                {% else %}
+                                    🔄
+                                {% endif %}
+                                
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="p-20 text-center text-slate-400 italic font-medium">
+                        <div class="flex flex-col items-center gap-2">
+                            <p>Nenhuma mensagem registada no sistema.</p>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Capturar os inputs de filtro
+    const inputData = document.getElementById('filtro-data');
+    const inputRemetente = document.getElementById('filtro-remetente');
+    const btnLimpar = document.getElementById('btn-limpar');
+    const linhasMensagem = document.querySelectorAll('.linha-mensagem');
+
+    // Função que avalia e esconde/mostra as linhas
+    function filtrarTabela() {
+        // O input de data devolve no formato YYYY-MM-DD
+        const dataSelecionada = inputData.value; 
+        // Passar a pesquisa para minúsculas para não haver problemas com maiúsculas/minúsculas
+        const textoRemetente = inputRemetente.value.toLowerCase().trim();
+
+        linhasMensagem.forEach(linha => {
+            const dataDaLinha = linha.getAttribute('data-dataenvio');
+            const remetenteDaLinha = linha.getAttribute('data-remetente');
+
+            // 1. A linha passa na data se não houver data escolhida OU se for exatamente o mesmo dia
+            const passaData = !dataSelecionada || dataDaLinha === dataSelecionada;
+            
+            // 2. A linha passa no remetente se a barra de pesquisa estiver vazia OU se o nome contiver as letras escritas
+            const passaRemetente = !textoRemetente || remetenteDaLinha.includes(textoRemetente);
+
+            // Só mostra a linha se passar em AMBOS os filtros
+            if (passaData && passaRemetente) {
+                linha.style.display = '';
+            } else {
+                linha.style.display = 'none';
+            }
+        });
+    }
+
+    // Acionar a função sempre que a data muda ou alguém escreve uma letra no nome
+    inputData.addEventListener('change', filtrarTabela);
+    inputRemetente.addEventListener('input', filtrarTabela);
+
+    // Botão prático para limpar os filtros e mostrar a tabela toda
+    btnLimpar.addEventListener('click', () => {
+        inputData.value = '';
+        inputRemetente.value = '';
+        filtrarTabela();
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-10">
+    <header class="mb-10">
+        <p class="text-gray-500 text-sm">Painel de Gestão</p>
+        <h1 class="text-3xl font-bold text-slate-900 mt-1">Suporte e Contactos</h1>
+        <p class="text-slate-500">Gerir pedidos de ajuda e reclamações dos utilizadores</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 mb-8 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Total de Tickets</p>
+            <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ total }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-200 bg-orange-50 text-center">
+            <p class="text-orange-500 text-xs font-bold uppercase">A Aguardar Resolução</p>
+            <h3 class="text-3xl font-bold text-orange-600 mt-2">{{ pendentes }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Resolvidos</p>
+            <h3 class="text-3xl font-bold text-green-600 mt-2">{{ resolvidos }}</h3>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 border-b border-gray-100">
+                <tr class="text-slate-500 text-xs font-bold uppercase tracking-widest">
+                    <th class="p-6">ID</th>
+                    <th class="p-6">Email Utilizador</th>
+                    <th class="p-6">Assunto</th>
+                    <th class="p-6">Data</th>
+                    <th class="p-6 text-center">Estado</th>
+                    <th class="p-6 text-right">Ações</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for t in tickets %}
+                <tr class="hover:bg-gray-50 transition-colors {% if not t.resolvido %}bg-orange-50/30{% endif %}">
+                    <td class="p-6 text-sm font-bold text-slate-500">#{{ t.id }}</td>
+                    <td class="p-6 text-sm font-semibold text-slate-800">{{ t.email }}</td>
+                    <td class="p-6 text-sm text-slate-600 font-medium truncate max-w-[200px]">{{ t.assunto }}</td>
+                    <td class="p-6 text-sm text-slate-500">{{ t.data_envio|date:"d M Y, H:i" }}</td>
+                    <td class="p-6 text-center">
+                        {% if t.resolvido %}
+                            <span class="bg-green-100 text-green-700 text-[10px] font-black uppercase px-2 py-1 rounded">Resolvido</span>
+                        {% else %}
+                            <span class="bg-orange-100 text-orange-700 text-[10px] font-black uppercase px-2 py-1 rounded animate-pulse">Pendente</span>
+                        {% endif %}
+                    </td>
+                    <td class="p-6 text-right">
+                        <a href="/suporte/{{ t.id }}/" class="bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm">
+                            Ver e Resolver
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="p-10 text-center text-slate-400 italic">Sem mensagens de suporte no sistema.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

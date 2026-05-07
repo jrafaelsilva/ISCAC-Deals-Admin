@@ -1,0 +1,76 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-10">
+    <header class="flex justify-between items-center mb-10">
+        <div>
+            <h1 class="text-3xl font-bold text-slate-900">Transações</h1>
+            <p class="text-slate-500">Histórico de todas as compras e vendas da plataforma</p>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 mb-8 gap-6">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Total de Transações</p>
+            <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ total_transacoes }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Volume Movimentado</p>
+            <h3 class="text-3xl font-bold text-green-600 mt-2">€{{ receita_total }}</h3>
+        </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+        <table class="w-full text-left">
+            <thead class="bg-gray-50 border-b border-gray-100">
+                <tr class="text-slate-500 text-xs font-bold uppercase tracking-widest">
+                    <th class="p-6 text-left">Data</th>
+                    <th class="p-6 text-left">Artigo</th>
+                    <th class="p-6 text-center">Tipo</th>
+                    <th class="p-6 text-left">Comprador</th>
+                    <th class="p-6 text-left">Vendedor</th>
+                    <th class="p-6 text-right">Valor</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+                {% for t in transacoes %}
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="p-6 text-left">
+                        <span class="text-sm font-semibold text-slate-700">{{ t.data_transacao|date:"d M Y" }}</span>
+                        <div class="text-[10px] text-gray-400 font-medium">{{ t.data_transacao|time:"H:i" }}</div>
+                    </td>
+                    
+                    <td class="p-6 text-left">
+                        <span class="font-bold text-slate-800 text-sm">{{ t.artigo }}</span>
+                    </td>
+                    
+                    <td class="p-6 text-center">
+                        {% if t.tipo == 'Produto' %}
+                            <span class="text-[11px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-bold">Produto</span>
+                        {% else %}
+                            <span class="text-[11px] bg-purple-50 text-purple-600 px-3 py-1 rounded-full font-bold">Serviço</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="p-6 text-left">
+                        <span class="text-sm font-semibold text-slate-700">{{ t.nome_comprador }}</span>
+                    </td>
+                    
+                    <td class="p-6 text-left">
+                        <span class="text-sm font-semibold text-slate-700">{{ t.nome_vendedor }}</span>
+                    </td>
+                    
+                    <td class="p-6 text-right">
+                        <span class="font-bold text-green-600 text-sm">{{ t.preco }}</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="p-10 text-center text-slate-400 italic font-medium">Nenhuma transação registada até ao momento.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

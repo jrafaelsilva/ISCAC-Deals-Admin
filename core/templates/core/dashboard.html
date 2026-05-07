@@ -1,0 +1,150 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="max-w-6xl mx-auto p-10">
+    <header class="mb-8">
+        <p class="text-gray-500 text-sm">Bem-vindo!</p>
+        <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Utilizadores</p>
+            <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ total_utilizadores }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Produtos Ativos</p>
+            <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ produtos_ativos }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center">
+            <p class="text-gray-400 text-xs font-bold uppercase">Transações</p>
+            <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ total_transacoes }}</h3>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 ring-2 ring-orange-100 text-center">
+            <p class="text-orange-500 text-xs font-bold uppercase">Receita Total</p>
+            <h3 class="text-3xl font-bold text-slate-800 mt-2">{{ receita_total }}€</h3>
+        </div>
+    </div>
+    
+    <div class="flex flex-col gap-10">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <div class="w-full">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Últimos Produtos</h2>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-x-auto h-full">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr class="text-slate-500 text-xs font-bold uppercase tracking-widest">
+                                <th class="p-6">Produto</th>
+                                <th class="p-6">Preço</th>
+                                <th class="p-6">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            {% for p in produtos_recentes %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="p-6">
+                                    <p class="font-bold text-slate-800 text-sm">{{ p.titulo }}</p>
+                                    <p class="text-[10px] text-gray-400 font-medium uppercase">Vendedor: {{ p.nome_vendedor }}</p>
+                                </td>
+                                <td class="p-6 font-bold text-slate-800 text-sm">{{ p.preco }}</td>
+                                <td class="p-6 text-[11px] text-slate-500 font-medium">{{ p.estado }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="p-10 text-center text-slate-400 italic text-sm">
+                                    Nenhum produto registado ainda.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="w-full">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Últimos Serviços</h2>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-x-auto h-full">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr class="text-slate-500 text-xs font-bold uppercase tracking-widest">
+                                <th class="p-6">Serviço</th>
+                                <th class="p-6">Preço</th>
+                                <th class="p-6">Formato</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            {% for s in servicos_recentes %}
+                            <tr class="hover:bg-gray-50 transition-colors">
+                                <td class="p-6">
+                                    <p class="font-bold text-slate-800 text-sm">{{ s.titulo }}</p>
+                                    <p class="text-[10px] text-gray-400 font-medium uppercase">Vendedor: {{ s.nome_vendedor }}</p>
+                                </td>
+                                <td class="p-6 font-bold text-slate-800 text-sm">{{ s.preco }}</td>
+                                <td class="p-6 text-[11px] text-slate-500 font-medium uppercase">{{ s.formato }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="p-10 text-center text-slate-400 italic text-sm">
+                                    Nenhum serviço registado ainda.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="w-full mt-10">
+            <h2 class="text-xl font-bold text-gray-900 mb-4">Tendência de Receita</h2>
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-[380px]">
+                <canvas id="graficoTendencia"></canvas>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    const ctx = document.getElementById('graficoTendencia').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'line', 
+        data: {
+            labels: {{ labels_grafico|safe }},
+            datasets: [{
+                label: 'Receita Diária (€)',
+                data: {{ dados_grafico|safe }}, 
+                borderColor: '#3b82f6', 
+                backgroundColor: 'rgba(59, 130, 246, 0.1)', 
+                borderWidth: 3,
+                tension: 0.4, 
+                fill: true, 
+                pointBackgroundColor: '#fff',
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#f3f4f6' }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            },
+            plugins: {
+                legend: { display: false } 
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% load static %}
+<script src="https://cdn.tailwindcss.com"></script>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISCAC-Deals Admin</title>
+    <link rel="icon" type="image/png" href="{% static 'core/logo.icon.png' %}">
+    <link rel="stylesheet" href="{% static 'core/style.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+    
+    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col p-6 fixed top-0 left-0 h-screen overflow-y-auto z-40">
+        <div class="mb-10 w-full flex flex-col items-center">
+            <a href="{% url 'dashboard' %}" class="block mb-3">
+                <img src="{% static 'core/logo.icon.png' %}" alt="ISCAC-Deals Logo" class="h-25 w-50 object-contain mx-auto">
+            </a>          
+            <p class="text-[14px] text-black-400 font-bold uppercase">Administração</p>
+        </div>
+
+        <nav class="flex-grow">
+            <ul class="space-y-2">
+                <li>
+                    <a href="{% url 'dashboard' %}" class="flex items-center gap-3 p-3 rounded-xl transition-all font-semibold {% if request.resolver_match.url_name == 'dashboard' %}bg-blue-50 text-blue-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'utilizadores' %}" class="flex items-center gap-3 p-3 rounded-xl transition-all font-semibold {% if request.resolver_match.url_name == 'utilizadores' %}bg-blue-50 text-blue-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+                        Utilizadores
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'produtos' %}" class="flex items-center gap-3 p-3 rounded-xl transition-all font-semibold {% if request.resolver_match.url_name == 'produtos' %}bg-blue-50 text-blue-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+                        Serviços/Produtos
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'transacoes' %}" class="flex items-center gap-3 p-3 rounded-xl transition-all font-semibold {% if request.resolver_match.url_name == 'transacoes' %}bg-blue-50 text-blue-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+                        Transações
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'chat' %}" class="flex items-center gap-3 p-3 rounded-xl transition-all font-semibold {% if request.resolver_match.url_name == 'chat' %}bg-blue-50 text-blue-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+                        Chat
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'suporte' %}" class="flex items-center gap-3 p-3 rounded-xl transition-all font-semibold {% if request.resolver_match.url_name == 'suporte' or request.resolver_match.url_name == 'detalhe_suporte' %}bg-blue-50 text-blue-600{% else %}text-gray-600 hover:bg-gray-50 hover:text-gray-900{% endif %}">
+                        Suporte
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="mt-auto pt-6 border-t border-gray-200 mb-2">
+            <div class="flex items-center justify-between">
+                
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-lg shadow-sm">
+                        {{ user.username|first|upper }}
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-sm font-bold text-gray-900 leading-tight">{{ user.username }}</span>
+                        <span class="text-xs text-gray-500 font-medium leading-tight">Admin</span>
+                    </div>
+                </div>
+
+                <style>
+                    .btn-sair {
+                        color: #6b7280; /* text-gray-500 */
+                        transition: all 0.3s ease;
+                    }
+                    .btn-sair:hover {
+                        color: #dc2626 !important; /* text-red-600 */
+                        background-color: #fef2f2 !important; /* bg-red-50 */
+                    }
+                </style>
+                <a href="/logout/" class="btn-sair text-xs font-bold uppercase tracking-wider px-3 py-2 rounded-lg">
+                    SAIR
+                </a>
+                
+            </div>
+        </div>
+    </aside>
+
+    <main class="ml-64  min-h-screen">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>
