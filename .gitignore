@@ -1,0 +1,11 @@
+
+# 1. Ambiente Virtual
+venv/
+env/
+
+# 2. Ficheiros temporários do Python 
+__pycache__/
+*.pyc
+
+# 3. Media 
+media/
