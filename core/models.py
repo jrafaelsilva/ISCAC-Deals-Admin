@@ -141,9 +141,6 @@ class Suporte(models.Model):
     resolvido = models.BooleanField(default=False)
 
     class Meta:
-        # ATENÇÃO: Coloca aqui o nome EXATO que deste à tabela no Supabase.
-        # Se na barra do lado esquerdo do Supabase ela se chama "suporte", deixa assim. 
-        # Se for "core_suporte", altera aqui!
         db_table = 'core_suporte' 
         
         # Isto diz ao Django para não tentar recriar ou alterar a estrutura da tabela,

@@ -13,7 +13,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', dashboard, name='home'),
-    path('dashboard/', dashboard, name='dashboard'), # <-- ESPAÇOS REMOVIDOS AQUI!
+    path('dashboard/', dashboard, name='dashboard'), 
     path('utilizadores/', lista_utilizadores, name='utilizadores'),
     path('produtos/', lista_produtos, name='produtos'),
     path('transacoes/', lista_transacoes, name='transacoes'),
