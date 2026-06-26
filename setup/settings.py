@@ -80,7 +80,7 @@ DATABASES = {
       'ENGINE': 'django.db.backends.postgresql',
        'NAME': 'postgres',
         'USER': 'postgres.esynhuqedmucenvriakc',
-        'PASSWORD': '', 
+        'PASSWORD': 'iscacdeals123', 
         'HOST': 'aws-0-eu-west-1.pooler.supabase.com',
         'PORT': '5432',
     }

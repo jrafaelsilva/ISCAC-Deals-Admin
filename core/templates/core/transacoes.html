@@ -20,6 +20,36 @@
         </div>
     </div>
 
+    <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+            
+            <div class="flex flex-col gap-1.5">
+                <label for="filtro-data" class="text-xs font-bold text-slate-400 uppercase">Data:</label>
+                <input type="date" id="filtro-data" class="bg-gray-50 border border-gray-200 text-slate-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-2 outline-none transition-all w-full">
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label for="filtro-artigo" class="text-xs font-bold text-slate-400 uppercase">Artigo:</label>
+                <input type="text" id="filtro-artigo" placeholder="Nome do artigo..." class="bg-gray-50 border border-gray-200 text-slate-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-2 outline-none transition-all w-full">
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label for="filtro-comprador" class="text-xs font-bold text-slate-400 uppercase">Comprador:</label>
+                <input type="text" id="filtro-comprador" placeholder="Nome comprador..." class="bg-gray-50 border border-gray-200 text-slate-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-2 outline-none transition-all w-full">
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+                <label for="filtro-vendedor" class="text-xs font-bold text-slate-400 uppercase">Vendedor:</label>
+                <input type="text" id="filtro-vendedor" placeholder="Nome vendedor..." class="bg-gray-50 border border-gray-200 text-slate-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-2 outline-none transition-all w-full">
+            </div>
+
+            <div class="flex justify-end lg:justify-center pb-2">
+                <button id="btn-limpar" class="text-sm text-blue-600 font-bold hover:text-blue-800 transition-colors whitespace-nowrap">Limpar Filtros</button>
+            </div>
+            
+        </div>
+    </div>
+
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
         <table class="w-full text-left">
             <thead class="bg-gray-50 border-b border-gray-100">
@@ -34,7 +64,12 @@
             </thead>
             <tbody class="divide-y divide-gray-50">
                 {% for t in transacoes %}
-                <tr class="hover:bg-gray-50 transition-colors">
+                <tr class="hover:bg-gray-50 transition-colors linha-transacao"
+                    data-data="{{ t.data_transacao|date:'Y-m-d' }}"
+                    data-artigo="{{ t.artigo|lower }}"
+                    data-comprador="{{ t.nome_comprador|lower }}"
+                    data-vendedor="{{ t.nome_vendedor|lower }}">
+                    
                     <td class="p-6 text-left">
                         <span class="text-sm font-semibold text-slate-700">{{ t.data_transacao|date:"d M Y" }}</span>
                         <div class="text-[10px] text-gray-400 font-medium">{{ t.data_transacao|time:"H:i" }}</div>
@@ -61,7 +96,7 @@
                     </td>
                     
                     <td class="p-6 text-right">
-                        <span class="font-bold text-green-600 text-sm">{{ t.preco }}</span>
+                        <span class="font-bold text-green-600 text-sm">{{ t.preco }}€</span>
                     </td>
                 </tr>
                 {% empty %}
@@ -73,4 +108,55 @@
         </table>
     </div>
 </div>
+
+<script>
+    const inputData = document.getElementById('filtro-data');
+    const inputArtigo = document.getElementById('filtro-artigo');
+    const inputComprador = document.getElementById('filtro-comprador');
+    const inputVendedor = document.getElementById('filtro-vendedor');
+    const btnLimpar = document.getElementById('btn-limpar');
+    const linhasTransacao = document.querySelectorAll('.linha-transacao');
+
+    function aplicarFiltros() {
+        const valData = inputData.value;
+        const valArtigo = inputArtigo.value.toLowerCase().trim();
+        const valComprador = inputComprador.value.toLowerCase().trim();
+        const valVendedor = inputVendedor.value.toLowerCase().trim();
+
+        linhasTransacao.forEach(linha => {
+            const dataLinha = linha.getAttribute('data-data');
+            const artigoLinha = linha.getAttribute('data-artigo');
+            const compradorLinha = linha.getAttribute('data-comprador');
+            const vendedorLinha = linha.getAttribute('data-vendedor');
+
+            // Verifica cada condição
+            const passaData = !valData || dataLinha === valData;
+            const passaArtigo = !valArtigo || artigoLinha.includes(valArtigo);
+            const passaComprador = !valComprador || compradorLinha.includes(valComprador);
+            const passaVendedor = !valVendedor || vendedorLinha.includes(valVendedor);
+
+            // Se passar em TODAS as condições, mostra a linha
+            if (passaData && passaArtigo && passaComprador && passaVendedor) {
+                linha.style.display = '';
+            } else {
+                linha.style.display = 'none';
+            }
+        });
+    }
+
+    // Escuta as alterações em todos os inputs
+    inputData.addEventListener('change', aplicarFiltros);
+    inputArtigo.addEventListener('input', aplicarFiltros);
+    inputComprador.addEventListener('input', aplicarFiltros);
+    inputVendedor.addEventListener('input', aplicarFiltros);
+
+    // Limpar filtros
+    btnLimpar.addEventListener('click', () => {
+        inputData.value = '';
+        inputArtigo.value = '';
+        inputComprador.value = '';
+        inputVendedor.value = '';
+        aplicarFiltros();
+    });
+</script>
 {% endblock %}

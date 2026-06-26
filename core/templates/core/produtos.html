@@ -16,27 +16,35 @@
         </div>
     </div>
 
-<div class="flex flex-col md:flex-row gap-2 mb-8  p-4 rounded-2xl ">
-<div class="flex items-center gap-3">
+    <div class="flex flex-col xl:flex-row gap-6 mb-8 bg-white p-4 rounded-2xl shadow-sm border border-gray-100 items-center justify-between">
+        
+        <div class="w-full xl:w-auto">
+            <div class="flex items-center gap-3">
+                <label for="filtro-nome" class="text-sm font-bold text-slate-400">Título:</label>
+                <input type="text" id="filtro-nome" placeholder="Procurar por título do anúncio..." class="bg-gray-50 border border-gray-200 text-slate-700 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block px-4 py-2 outline-none transition-all w-full md:w-80">
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row items-center gap-4 ml-auto w-full xl:w-auto justify-end">
             <div class="flex gap-2">
                 <button class="filter-tipo-btn bg-blue-600 text-white px-3 py-1.5 rounded-full font-bold text-sm shadow-sm transition-all" data-target="todos">Todos</button>
                 <button class="filter-tipo-btn bg-white text-slate-500 px-3 py-1.5 rounded-full font-bold text-sm border border-gray-200 transition-all" data-target="produtos">Produtos</button>
-                <button class="filter-tipo-btn bg-white text-slate-500 px-3 py-1.5 rounded-full font-bold text-sm border border-gray-200  transition-all" data-target="servicos">Serviços</button>
+                <button class="filter-tipo-btn bg-white text-slate-500 px-3 py-1.5 rounded-full font-bold text-sm border border-gray-200 transition-all" data-target="servicos">Serviços</button>
             </div>
-        </div>
 
-        <div class="w-px bg-gray-200 hidden md:block"></div>
+            <div class="w-px bg-gray-200 hidden lg:block h-6"></div>
 
-        <div class="flex items-center gap-3">
             <div class="flex gap-2">
                 <button class="filter-estado-btn bg-blue-600 text-white px-3 py-1.5 rounded-full font-bold text-sm shadow-sm transition-all" data-estado="todos">Todos</button>
-                <button class="filter-estado-btn bg-white text-slate-500 px-3 py-1.5 rounded-full font-bold text-sm border border-gray-200 hover:bg-gray-50 transition-all" data-estado="1">Ativos</button>
-                <button class="filter-estado-btn bg-white text-slate-500 px-3 py-1.5 rounded-full font-bold text-sm border border-gray-200 hover:bg-gray-50 transition-all" data-estado="0">Inativos</button>
+                <button class="filter-estado-btn bg-white text-slate-500 px-3 py-1.5 rounded-full font-bold text-sm border border-gray-200 transition-all" data-estado="1">Ativos</button>
+                <button class="filter-estado-btn bg-white text-slate-500 px-3 py-1.5 rounded-full font-bold text-sm border border-gray-200 transition-all" data-estado="0">Inativos</button>
             </div>
+            
+            <button id="btn-limpar" class="text-sm text-blue-600 font-bold hover:text-blue-800 transition-colors ml-2 whitespace-nowrap">Limpar Filtros</button>
         </div>
-
     </div>
-<div id="tabela-produtos" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8 transition-all">
+
+    <div id="tabela-produtos" class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8 transition-all">
         <table class="w-full text-left">
             <thead class="bg-gray-50 border-b border-gray-100">
                 <tr class="text-slate-500 text-xs font-bold uppercase tracking-widest">
@@ -52,7 +60,9 @@
             </thead>
             <tbody class="divide-y divide-gray-50">
                 {% for p in produtos %}
-                <tr class="hover:bg-gray-50 transition-colors group linha-anuncio" data-ativo="{{ p.ativo }}">
+                <tr class="hover:bg-gray-50 transition-colors group linha-anuncio" 
+                    data-ativo="{{ p.ativo }}" 
+                    data-nome="{{ p.titulo|lower }}">
                     <td class="p-6">
                         <div class="flex items-center gap-6">
                             {% if p.foto_url %}
@@ -79,7 +89,6 @@
                             <span class="text-sm font-semibold text-slate-700">Não</span>
                         {% endif %}
                     </td>
-
                     <td class="p-6 text-center">
                         {% if p.foi_vendido %}
                             <span class="text-sm font-semibold text-slate-700">Sim</span>
@@ -95,7 +104,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7" class="p-10 text-center text-slate-400 italic font-medium">Nenhum produto registado.</td>
+                    <td colspan="8" class="p-10 text-center text-slate-400 italic font-medium">Nenhum produto registado.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -116,7 +125,9 @@
             </thead>
             <tbody class="divide-y divide-gray-50">
                 {% for s in servicos %}
-                <tr class="hover:bg-gray-50 transition-colors group linha-anuncio" data-ativo="{{ s.ativo }}">
+                <tr class="hover:bg-gray-50 transition-colors group linha-anuncio" 
+                    data-ativo="{{ s.ativo }}"
+                    data-nome="{{ s.titulo|lower }}">
                     <td class="p-6">
                         <div class="flex items-center gap-6">
                             {% if s.foto_url %}
@@ -134,7 +145,7 @@
                     </td>
                     <td class="p-6 text-center"><span class="text-sm font-semibold text-slate-700">{{ s.nome_categoria }}</span></td>
                     <td class="p-6"><span class="text-sm font-semibold text-slate-700">{{ s.nome_vendedor }}</span></td>
-                    <td class="p-6"><span class="text-sm font-semibold text-slate-700">{{ s.preco }}€</span></td>
+                    <td class="p-6"><span class="text-sm font-semibold text-slate-700">{{ s.preco }}€/h</span></td>
                     <td class="p-6">    
                         {% if s.ativo == 1 %}
                             <span class="text-sm font-semibold text-slate-700">Sim</span>
@@ -159,17 +170,21 @@
 </div>
 
 <script>
-    let filtroTipoAtual = 'todos';
-    let filtroEstadoAtual = 'todos';
-
+    const inputNome = document.getElementById('filtro-nome');
+    const btnLimpar = document.getElementById('btn-limpar');
+    
     const btnsTipo = document.querySelectorAll('.filter-tipo-btn');
     const btnsEstado = document.querySelectorAll('.filter-estado-btn');
+    
     const tabProdutos = document.getElementById('tabela-produtos');
     const tabServicos = document.getElementById('tabela-servicos');
     const linhasAnuncios = document.querySelectorAll('.linha-anuncio');
 
+    let filtroTipoAtual = 'todos';
+    let filtroEstadoAtual = 'todos';
+
     function aplicarFiltros() {
-        // 1. Ocultar ou Mostrar as tabelas inteiras
+        // 1. Mostrar/Ocultar Tabelas de acordo com o Tipo
         if (filtroTipoAtual === 'todos') {
             tabProdutos.style.display = '';
             tabServicos.style.display = '';
@@ -181,11 +196,17 @@
             tabServicos.style.display = '';
         }
 
-        // 2. Ocultar ou Mostrar as linhas consoante o estado Ativo/Inativo
+        const textoNome = inputNome.value.toLowerCase().trim();
+
+        // 2. Filtrar cada linha baseando-se em Estado e Nome
         linhasAnuncios.forEach(linha => {
             const estadoDaLinha = linha.getAttribute('data-ativo');
-            
-            if (filtroEstadoAtual === 'todos' || estadoDaLinha === filtroEstadoAtual) {
+            const nomeDaLinha = linha.getAttribute('data-nome');
+
+            const passaEstado = filtroEstadoAtual === 'todos' || estadoDaLinha === filtroEstadoAtual;
+            const passaNome = !textoNome || nomeDaLinha.includes(textoNome);
+
+            if (passaEstado && passaNome) {
                 linha.style.display = '';
             } else {
                 linha.style.display = 'none';
@@ -193,7 +214,10 @@
         });
     }
 
-    // Comportamento dos botões de Tipo (Produtos/Serviços)
+    // Acionar filtro ao escrever no título
+    inputNome.addEventListener('input', aplicarFiltros);
+
+    // Botões de Tipo (Produtos/Serviços)
     btnsTipo.forEach(btn => {
         btn.addEventListener('click', function() {
             btnsTipo.forEach(b => {
@@ -208,7 +232,7 @@
         });
     });
 
-    // Comportamento dos botões de Estado (Ativos/Inativos)
+    // Botões de Estado (Ativos/Inativos)
     btnsEstado.forEach(btn => {
         btn.addEventListener('click', function() {
             btnsEstado.forEach(b => {
@@ -221,6 +245,37 @@
             filtroEstadoAtual = this.getAttribute('data-estado');
             aplicarFiltros();
         });
+    });
+
+    // Limpar todos os filtros
+    btnLimpar.addEventListener('click', () => {
+        inputNome.value = '';
+        filtroTipoAtual = 'todos';
+        filtroEstadoAtual = 'todos';
+
+        // Repor botões do Tipo
+        btnsTipo.forEach(b => {
+            if(b.getAttribute('data-target') === 'todos') {
+                b.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+                b.classList.remove('bg-white', 'text-slate-500', 'border', 'border-gray-200');
+            } else {
+                b.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+                b.classList.add('bg-white', 'text-slate-500', 'border', 'border-gray-200');
+            }
+        });
+
+        // Repor botões do Estado
+        btnsEstado.forEach(b => {
+            if(b.getAttribute('data-estado') === 'todos') {
+                b.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+                b.classList.remove('bg-white', 'text-slate-500', 'border', 'border-gray-200');
+            } else {
+                b.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+                b.classList.add('bg-white', 'text-slate-500', 'border', 'border-gray-200');
+            }
+        });
+
+        aplicarFiltros();
     });
 </script>
 {% endblock %}

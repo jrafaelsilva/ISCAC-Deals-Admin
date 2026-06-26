@@ -50,9 +50,15 @@
                         {% endif %}
                     </td>
                     <td class="p-6 text-right">
-                        <a href="/suporte/{{ t.id }}/" class="bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm">
-                            Ver e Resolver
-                        </a>
+                        {% if t.resolvido %}
+                            <a href="/suporte/{{ t.id }}/" class="bg-white hover:bg-gray-50 text-gray-500 border border-gray-200 px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm">
+                                Ver Ticket
+                            </a>
+                        {% else %}
+                            <a href="/suporte/{{ t.id }}/" class="bg-white hover:bg-blue-50 text-blue-600 border border-blue-200 px-4 py-2 rounded-lg text-xs font-bold transition-all shadow-sm">
+                                Ver e Resolver
+                            </a>
+                        {% endif %}
                     </td>
                 </tr>
                 {% empty %}
