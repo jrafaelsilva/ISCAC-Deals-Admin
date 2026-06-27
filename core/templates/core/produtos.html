@@ -80,7 +80,15 @@
                     </td>
                     <td class="p-6 text-center"><span class="text-sm font-semibold text-slate-700">{{ p.nome_categoria }}</span></td>
                     <td class="p-6 text-left"><span class="text-sm font-semibold text-slate-700">{{ p.nome_vendedor }}</span></td>
-                    <td class="p-6 text-right"><span class="text-sm font-semibold text-slate-700">{{ p.preco }}€</span></td>
+                    <td class="p-6 text-right">
+                        <span class="text-sm font-semibold text-slate-700">
+                            {% if '€' in p.preco|stringformat:"s" %}
+                                {{ p.preco }}
+                            {% else %}
+                                {{ p.preco }}€
+                            {% endif %}
+                        </span>
+                    </td>                    
                     <td class="p-6 text-center"><div class="text-sm font-semibold text-slate-700">{{ p.estado }}</div></td>
                     <td class="p-6 text-center">    
                         {% if p.ativo == 1 %}
