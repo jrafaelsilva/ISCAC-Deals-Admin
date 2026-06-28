@@ -50,7 +50,15 @@
                                     <p class="font-bold text-slate-800 text-sm">{{ p.titulo }}</p>
                                     <p class="text-[10px] text-gray-400 font-medium uppercase">Vendedor: {{ p.nome_vendedor }}</p>
                                 </td>
-                                <td class="p-6 font-bold text-slate-800 text-sm">{{ p.preco }}€</td>
+                                <td class="p-6 text-right">
+                                    <span class="text-sm font-bold text-slate-700">
+                                        {% if '€' in p.preco|stringformat:"s" %}
+                                            {{ p.preco }}
+                                        {% else %}
+                                            {{ p.preco }}€
+                                        {% endif %}
+                                    </span>
+                                </td>                                 
                                 <td class="p-6 text-[11px] text-slate-500 font-medium">{{ p.estado }}</td>
                             </tr>
                             {% empty %}
@@ -83,7 +91,7 @@
                                     <p class="font-bold text-slate-800 text-sm">{{ s.titulo }}</p>
                                     <p class="text-[10px] text-gray-400 font-medium uppercase">Vendedor: {{ s.nome_vendedor }}</p>
                                 </td>
-                                <td class="p-6 font-bold text-slate-800 text-sm">{{ s.preco }}€</td>
+                                <td class="p-6 font-bold text-slate-800 text-sm">{{ s.preco }}€/h</td>
                                 <td class="p-6 text-[11px] text-slate-500 font-medium uppercase">{{ s.formato }}</td>
                             </tr>
                             {% empty %}
